@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Implementación - La Birra Bar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .dashboard {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .header h1 {
+            color: #2d3748;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            color: #718096;
+            font-size: 1.2em;
+        }
+        
+        .timeline-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(to bottom, #667eea, #764ba2);
+            transform: translateX(-50%);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .timeline-item:nth-child(odd) {
+            flex-direction: row-reverse;
+        }
+        
+        .timeline-content {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            width: 45%;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .timeline-item:nth-child(odd) .timeline-content {
+            text-align: right;
+        }
+        
+        .timeline-marker {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 30px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .phase-header {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .phase-dates {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .launch-strategy {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .strategy-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 5px solid #667eea;
+        }
+        
+        .strategy-card.pre-launch {
+            border-left-color: #f59e0b;
+        }
+        
+        .strategy-card.launch {
+            border-left-color: #48bb78;
+        }
+        
+        .strategy-card.digital {
+            border-left-color: #764ba2;
+        }
+        
+        .strategy-card h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .strategy-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .check-icon {
+            width: 24px;
+            height: 24px;
+            background: #48bb78;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 14px;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            color: #718096;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+        
+        .gantt-chart {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            overflow-x: auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .gantt-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            min-width: 800px;
+        }
+        
+        .gantt-label {
+            width: 200px;
+            font-weight: 600;
+            color: #4a5568;
+            padding-right: 20px;
+        }
+        
+        .gantt-bar-container {
+            flex: 1;
+            position: relative;
+            height: 35px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .gantt-bar {
+            position: absolute;
+            height: 100%;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            color: white;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .phase1 { background: #667eea; }
+        .phase2 { background: #48bb78; }
+        .phase3 { background: #f59e0b; }
+        .phase4 { background: #764ba2; }
+        
+        .critical-path {
+            background: #fff5f5;
+            border: 2px solid #ef4444;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .critical-path h3 {
+            color: #dc2626;
+            margin-bottom: 15px;
+        }
+        
+        .critical-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .marketing-calendar {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            position: relative;
+        }
+        
+        .calendar-day.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .calendar-day.milestone {
+            border: 2px solid #48bb78;
+        }
+        
+        .kpi-tracker {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .kpi-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .kpi-title {
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .kpi-target {
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .timeline::before {
+                left: 30px;
+            }
+            
+            .timeline-content {
+                width: calc(100% - 60px);
+                margin-left: 60px;
+            }
+            
+            .timeline-item {
+                flex-direction: row !important;
+            }
+            
+            .timeline-item:nth-child(odd) .timeline-content {
+                text-align: left;
+            }
+            
+            .timeline-marker {
+                left: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>PLAN DE IMPLEMENTACIÓN Y LANZAMIENTO</h1>
+            <div class="subtitle">La Birra Bar México - Dashboard Estratégico</div>
+            <div style="margin-top: 10px; color: #667eea; font-weight: 600;">120 Días hasta la Gran Apertura | Lomas de Chapultepec</div>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value">$7-8M</div>
+                <div class="metric-label">Inversión Total</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">120 días</div>
+                <div class="metric-label">Timeline Total</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">Mes 7</div>
+                <div class="metric-label">Punto Equilibrio</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">500</div>
+                <div class="metric-label">Reservas Meta</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">10K</div>
+                <div class="metric-label">Followers Target</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">15-18m</div>
+                <div class="metric-label">ROI Proyectado</div>
+            </div>
+        </div>
+        
+        <div class="timeline-container">
+            <h2 style="text-align: center; color: #2d3748; margin-bottom: 30px;">CRONOGRAMA DE IMPLEMENTACIÓN</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="phase-header">FASE 1: PRE-APERTURA</div>
+                        <div class="phase-dates">Meses 1-4</div>
+                        <ul style="list-style: none; padding: 0;">
+                            <li>✓ Firma contrato Boulevard Virreyes</li>
+                            <li>✓ Permisos COFEPRIS y licencias</li>
+                            <li>✓ Inicio obra y adecuaciones</li>
+                            <li>✓ Reclutamiento equipo core</li>
+                            <li>✓ Desarrollo identidad de marca</li>
+                        </ul>
+                    </div>
+                    <div class="timeline-marker">1</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="phase-header">FASE 2: LANZAMIENTO</div>
+                        <div class="phase-dates">Meses 5-7</div>
+                        <ul style="list-style: none; padding: 0;">
+                            <li>✓ Soft opening VIP (100 invitados)</li>
+                            <li>✓ Ajustes operativos</li>
+                            <li>✓ Gran apertura al público</li>
+                            <li>✓ Promoción 2x1 primera semana</li>
+                            <li>✓ Activación con influencers</li>
+                        </ul>
+                    </div>
+                    <div class="timeline-marker">2</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="phase-header">FASE 3: CONSOLIDACIÓN</div>
+                        <div class="phase-dates">Meses 8-12</div>
+                        <ul style="list-style: none; padding: 0;">
+                            <li>✓ Punto de equilibrio alcanzado</li>
+                            <li>✓ Programa de fidelización activo</li>
+                            <li>✓ Optimización de menú</li>
+                            <li>✓ Dark Kitchen Polanco/Roma</li>
+                            <li>✓ Evaluación segunda ubicación</li>
+                        </ul>
+                    </div>
+                    <div class="timeline-marker">3</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="phase-header">FASE 4: EXPANSIÓN</div>
+                        <div class="phase-dates">Año 2+</div>
+                        <ul style="list-style: none; padding: 0;">
+                            <li>✓ Segunda ubicación física</li>
+                            <li>✓ Formato express desarrollo</li>
+                            <li>✓ Modelo franquicia</li>
+                            <li>✓ Expansión otras ciudades</li>
+                            <li>✓ Línea retail productos</li>
+                        </ul>
+                    </div>
+                    <div class="timeline-marker">4</div>
+                </div>
+            </div>
+        </div>
+        
+        <h2 style="text-align: center; color: #2d3748; margin: 30px 0;">ESTRATEGIA DE LANZAMIENTO DETALLADA</h2>
+        
+        <div class="launch-strategy">
+            <div class="strategy-card pre-launch">
+                <h3>🎯 PRE-APERTURA (Mes 4)</h3>
+                <div class="strategy-item">
+                    <div class="check-icon">✓</div>
+                    <div>
+                        <strong>Evento VIP Exclusivo</strong><br>
+                        100 influencers gastronómicos y prensa
+                    </div>
+                </div>
+                <div class="strategy-item">
+                    <div class="check-icon">✓</div>
+                    <div>
+                        <strong>Partnership Bancario</strong><br>
+                        American Express/Citibanamex Platinum
+                    </div>
+                </div>
+                <div class="strategy-item">
+                    <div class="check-icon">✓</div>
+                    <div>
+                        <strong>Campaña Teaser</strong><br>
+                        Instagram/TikTok - 30 días previos
+                    </div>
+                </div>
+                <div class="strategy-item">
+                    <div class="check-icon">✓</div>
+                    <div>
+                        <strong>Pre-venta Digital</strong><br>
+                        Meta: 500 reservas primera semana
+                    </div>
+                </div>
+                <div class="strategy-item">
+                    <div class="check-icon">✓</div>
+                    <div>
+                        <strong>Capacitación Final</strong><br>
+                        60 horas de training intensivo
+                    </div>
+                </div>
+            </div>
+            
+            <div class="strategy-card launch">
+                <h3>🚀 GRAN APERTURA (Mes 5)</h3>
+                <div class="strategy-item">
+                    <div class="check-icon">✓</div>
+                    <div>
+                        <strong>Soft Opening</strong><br>
+                        3 días con invitados seleccionados
+                    </div>
+                </div>
+                <div class="strategy-item">
+                    <div class="check-icon">✓</div>
+                    <div>
+                        <strong>Promoción Inaugural</strong><br>
+                        2x1 en hamburguesas (7 días)
+                    </div>
+                </div>
+                <div class="strategy-item">
+                    <div class="check-icon">✓</div>
+                    <div>
+                        <strong>Activación Cervecerías</strong><br>
+                        Degustación con partners craft
+                    </div>
+                </div>
+                <div class="strategy-item">
+                    <div class="check-icon">✓</div>
+                    <div>
+                        <strong>Happy Hour Launch</strong><br>
+                        3-7 PM descuentos corporativos
+                    </div>
+                </div>
+                <div class="strategy-item">
+                    <div class="check-icon">✓</div>
+                    <div>
+                        <strong>Press Coverage</strong><br>
+                        TimeOut, Chilango, Forbes México
+                    </div>
+                </div>
+            </div>
+            
+            <div class="strategy-card digital">
+                <h3>💻 MARKETING DIGITAL</h3>
+                <div class="strategy-item">
+                    <div class="check-icon">✓</div>
+                    <div>
+                        <strong>Instagram</strong><br>
+                        @LabirraBarMX - Contenido diario
+                    </div>
+                </div>
+                <div class="strategy-item">
+                    <div class="check-icon">✓</div>
+                    <div>
+                        <strong>TikTok</strong><br>
+                        Behind the scenes, preparación
+                    </div>
+                </div>
+                <div class="strategy-item">
+                    <div class="check-icon">✓</div>
+                    <div>
+                        <strong>Influencer Program</strong><br>
+                        15 micro-influencers foodies
+                    </div>
+                </div>
+                <div class="strategy-item">
+                    <div class="check-icon">✓</div>
+                    <div>
+                        <strong>Google Ads</strong><br>
+                        SEM localizado Lomas/Polanco
+                    </div>
+                </div>
+                <div class="strategy-item">
+                    <div class="check-icon">✓</div>
+                    <div>
+                        <strong>Email Marketing</strong><br>
+                        Base 5,000 contactos premium
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="gantt-chart">
+            <h2 style="color: #2d3748; margin-bottom: 20px;">DIAGRAMA GANTT - ACTIVIDADES CRÍTICAS</h2>
+            <div class="gantt-row">
+                <div class="gantt-label">Negociación Local</div>
+                <div class="gantt-bar-container">
+                    <div class="gantt-bar phase1" style="left: 0%; width: 8%;">15 días</div>
+                </div>
+            </div>
+            <div class="gantt-row">
+                <div class="gantt-label">Permisos y Licencias</div>
+                <div class="gantt-bar-container">
+                    <div class="gantt-bar phase1" style="left: 8%; width: 17%;">30 días</div>
+                </div>
+            </div>
+            <div class="gantt-row">
+                <div class="gantt-label">Obra y Adecuación</div>
+                <div class="gantt-bar-container">
+                    <div class="gantt-bar phase1" style="left: 17%; width: 33%;">60 días</div>
+                </div>
+            </div>
+            <div class="gantt-row">
+                <div class="gantt-label">Equipamiento</div>
+                <div class="gantt-bar-container">
+                    <div class="gantt-bar phase1" style="left: 42%; width: 8%;">15 días</div>
+                </div>
+            </div>
+            <div class="gantt-row">
+                <div class="gantt-label">Reclutamiento</div>
+                <div class="gantt-bar-container">
+                    <div class="gantt-bar phase2" style="left: 25%; width: 17%;">30 días</div>
+                </div>
+            </div>
+            <div class="gantt-row">
+                <div class="gantt-label">Capacitación</div>
+                <div class="gantt-bar-container">
+                    <div class="gantt-bar phase2" style="left: 42%; width: 17%;">30 días</div>
+                </div>
+            </div>
+            <div class="gantt-row">
+                <div class="gantt-label">Marketing Pre-Launch</div>
+                <div class="gantt-bar-container">
+                    <div class="gantt-bar phase3" style="left: 50%; width: 17%;">30 días</div>
+                </div>
+            </div>
+            <div class="gantt-row">
+                <div class="gantt-label">Soft Opening</div>
+                <div class="gantt-bar-container">
+                    <div class="gantt-bar phase2" style="left: 65%; width: 4%;">7 días</div>
+                </div>
+            </div>
+            <div class="gantt-row">
+                <div class="gantt-label">Gran Apertura</div>
+                <div class="gantt-bar-container">
+                    <div class="gantt-bar phase2" style="left: 69%; width: 2%;">Día 120</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="critical-path">
+            <h3>⚠️ RUTA CRÍTICA - DECISIONES INMEDIATAS (0-30 DÍAS)</h3>
+            <div class="critical-item">
+                <span><strong>Cerrar ubicación Boulevard Virreyes</strong></span>
+                <span style="color: #dc2626; font-weight: bold;">URGENTE</span>
+            </div>
+            <div class="critical-item">
+                <span><strong>Asegurar inversión $7-8M MXN</strong></span>
+                <span style="color: #dc2626; font-weight: bold;">CRÍTICO</span>
+            </div>
+            <div class="critical-item">
+                <span><strong>Contratar Chef Ejecutivo</strong></span>
+                <span style="color: #f59e0b; font-weight: bold;">ALTA</span>
+            </div>
+            <div class="critical-item">
+                <span><strong>Partnerships cervecerías craft</strong></span>
+                <span style="color: #f59e0b; font-weight: bold;">ALTA</span>
+            </div>
+            <div class="critical-item">
+                <span><strong>Iniciar desarrollo de marca</strong></span>
+                <span style="color: #667eea; font-weight: bold;">MEDIA</span>
+            </div>
+        </div>
+        
+        <h2 style="text-align: center; color: #2d3748; margin: 30px 0;">KPIs DE MONITOREO - LANZAMIENTO</h2>
+        
+        <div class="kpi-tracker">
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">Pre-ventas Digitales</span>
+                    <span class="kpi-target">Meta: 500</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%;" id="presales"></div>
+                </div>
+                <p style="margin-top: 10px; color: #718096;">Reservas primera semana</p>
+            </div>
+            
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">Followers Instagram</span>
+                    <span class="kpi-target">Meta: 10,000</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%;" id="followers"></div>
+                </div>
+                <p style="margin-top: 10px; color: #718096;">Pre-apertura target</p>
+            </div>
+            
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">Burn Rate Semanal</span>
+                    <span class="kpi-target">Max: $150K</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%;" id="burnrate"></div>
+                </div>
+                <p style="margin-top: 10px; color: #718096;">Control presupuestal</p>
+            </div>
+            
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">Capacitación Equipo</span>
+                    <span class="kpi-target">60 horas</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%;" id="training"></div>
+                </div>
+                <p style="margin-top: 10px; color: #718096;">Training completado</p>
+            </div>
+            
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">Obra y Adecuación</span>
+                    <span class="kpi-target">120 días</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%;" id="construction"></div>
+                </div>
+                <p style="margin-top: 10px; color: #718096;">Timeline construcción</p>
+            </div>
+            
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">Influencer Reach</span>
+                    <span class="kpi-target">500K+</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%;" id="reach"></div>
+                </div>
+                <p style="margin-top: 10px; color: #718096;">Alcance total campaign</p>
+            </div>
+        </div>
+        
+        <div class="marketing-calendar" style="margin-top: 30px;">
+            <h2 style="color: #2d3748; margin-bottom: 20px;">CALENDARIO DE MARKETING - MES DE LANZAMIENTO</h2>
+            <div class="calendar-grid">
+                <div class="calendar-day"><strong>LUN</strong></div>
+                <div class="calendar-day"><strong>MAR</strong></div>
+                <div class="calendar-day"><strong>MIÉ</strong></div>
+                <div class="calendar-day"><strong>JUE</strong></div>
+                <div class="calendar-day"><strong>VIE</strong></div>
+                <div class="calendar-day"><strong>SÁB</strong></div>
+                <div class="calendar-day"><strong>DOM</strong></div>
+                
+                <div class="calendar-day">1<br><small>Teaser</small></div>
+                <div class="calendar-day">2<br><small>Content</small></div>
+                <div class="calendar-day active">3<br><small>Soft Open</small></div>
+                <div class="calendar-day active">4<br><small>VIP Event</small></div>
+                <div class="calendar-day active">5<br><small>Press Day</small></div>
+                <div class="calendar-day milestone">6<br><small>APERTURA</small></div>
+                <div class="calendar-day milestone">7<br><small>2x1 Promo</small></div>
+                
+                <div class="calendar-day active">8<br><small>Influencer</small></div>
+                <div class="calendar-day active">9<br><small>Content</small></div>
+                <div class="calendar-day active">10<br><small>Happy Hour</small></div>
+                <div class="calendar-day active">11<br><small>Corporate</small></div>
+                <div class="calendar-day active">12<br><small>Craft Beer</small></div>
+                <div class="calendar-day milestone">13<br><small>BRUNCH</small></div>
+                <div class="calendar-day">14<br><small>Review</small></div>
+                
+                <div class="calendar-day">15<br><small>Ajustes</small></div>
+                <div class="calendar-day">16<br><small>Content</small></div>
+                <div class="calendar-day">17<br><small>Email</small></div>
+                <div class="calendar-day">18<br><small>Partners</small></div>
+                <div class="calendar-day">19<br><small>Event</small></div>
+                <div class="calendar-day milestone">20<br><small>Chef Guest</small></div>
+                <div class="calendar-day">21<br><small>Metrics</small></div>
+                
+                <div class="calendar-day">22<br><small>Social</small></div>
+                <div class="calendar-day">23<br><small>Content</small></div>
+                <div class="calendar-day">24<br><small>Loyalty</small></div>
+                <div class="calendar-day">25<br><small>Corporate</small></div>
+                <div class="calendar-day">26<br><small>TikTok</small></div>
+                <div class="calendar-day milestone">27<br><small>Monthly Rev</small></div>
+                <div class="calendar-day">28<br><small>Planning</small></div>
+            </div>
+        </div>
+        
+        <div style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); padding: 30px; border-radius: 15px; margin-top: 30px; color: white;">
+            <h2 style="margin-bottom: 20px;">📋 CHECKLIST DE LANZAMIENTO EXITOSO</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px;">
+                    <h3 style="margin-bottom: 15px;">Operaciones</h3>
+                    <div style="line-height: 2;">
+                        ☐ Manual de operaciones completo<br>
+                        ☐ 30 recetas estandarizadas<br>
+                        ☐ Sistema POS configurado<br>
+                        ☐ Inventario inicial 2 semanas<br>
+                        ☐ Proveedores confirmados<br>
+                        ☐ Staff 25 personas capacitadas
+                    </div>
+                </div>
+                <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px;">
+                    <h3 style="margin-bottom: 15px;">Marketing</h3>
+                    <div style="line-height: 2;">
+                        ☐ 10,000 followers Instagram<br>
+                        ☐ 500 reservas confirmadas<br>
+                        ☐ 15 influencers comprometidos<br>
+                        ☐ Press kit distribuido<br>
+                        ☐ Website live y funcional<br>
+                        ☐ Google My Business activo
+                    </div>
+                </div>
+                <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px;">
+                    <h3 style="margin-bottom: 15px;">Legal/Admin</h3>
+                    <div style="line-height: 2;">
+                        ☐ Licencias aprobadas<br>
+                        ☐ COFEPRIS completo<br>
+                        ☐ Seguros contratados<br>
+                        ☐ Nómina configurada<br>
+                        ☐ Contratos firmados<br>
+                        ☐ Protección Civil OK
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="background: #fff7ed; padding: 30px; border-radius: 15px; margin-top: 30px; border: 2px solid #f59e0b;">
+            <h2 style="color: #92400e; margin-bottom: 20px;">🎯 OBJETIVOS Y METAS DEL LANZAMIENTO</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                <div style="background: white; padding: 20px; border-radius: 10px;">
+                    <h4 style="color: #2d3748; margin-bottom: 10px;">Semana 1</h4>
+                    <ul style="color: #4a5568; line-height: 1.8;">
+                        <li>500 clientes únicos</li>
+                        <li>$350,000 en ventas</li>
+                        <li>4.5+ rating promedio</li>
+                        <li>50 reseñas Google</li>
+                    </ul>
+                </div>
+                <div style="background: white; padding: 20px; border-radius: 10px;">
+                    <h4 style="color: #2d3748; margin-bottom: 10px;">Mes 1</h4>
+                    <ul style="color: #4a5568; line-height: 1.8;">
+                        <li>2,000 clientes únicos</li>
+                        <li>$1.5M en ventas</li>
+                        <li>30% repeat rate</li>
+                        <li>15K followers totales</li>
+                    </ul>
+                </div>
+                <div style="background: white; padding: 20px; border-radius: 10px;">
+                    <h4 style="color: #2d3748; margin-bottom: 10px;">Trimestre 1</h4>
+                    <ul style="color: #4a5568; line-height: 1.8;">
+                        <li>$4.7M en ventas</li>
+                        <li>40% repeat rate</li>
+                        <li>Top 10 TripAdvisor</li>
+                        <li>Break-even mes 7</li>
+                    </ul>
+                </div>
+                <div style="background: white; padding: 20px; border-radius: 10px;">
+                    <h4 style="color: #2d3748; margin-bottom: 10px;">Año 1</h4>
+                    <ul style="color: #4a5568; line-height: 1.8;">
+                        <li>$27.9M ventas totales</li>
+                        <li>13% EBITDA</li>
+                        <li>Dark Kitchen activa</li>
+                        <li>Plan expansión listo</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div style="background: #f0f9ff; padding: 30px; border-radius: 15px; margin-top: 30px; border: 2px solid #3b82f6;">
+            <h2 style="color: #1e40af; margin-bottom: 20px;">💡 INNOVACIONES ESTRATÉGICAS DE LANZAMIENTO</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px;">
+                <div>
+                    <h3 style="color: #2563eb; margin-bottom: 15px;">Experiencias Únicas</h3>
+                    <ul style="line-height: 2; color: #475569;">
+                        <li><strong>Burger Lab Nights:</strong> Chef invitado mensual</li>
+                        <li><strong>Beer Pairing Dinners:</strong> Maridajes exclusivos</li>
+                        <li><strong>Sunday Brunch Premium:</strong> Familia ABC+</li>
+                        <li><strong>Corporate Happy Hour:</strong> 3-7 PM diario</li>
+                        <li><strong>Burger Master Class:</strong> Clases de cocina VIP</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="color: #2563eb; margin-bottom: 15px;">Tecnología y Digital</h3>
+                    <ul style="line-height: 2; color: #475569;">
+                        <li><strong>App Propia:</strong> Pedidos y programa lealtad</li>
+                        <li><strong>QR Menu Interactivo:</strong> Con AR experience</li>
+                        <li><strong>Live Kitchen Cam:</strong> Transparencia total</li>
+                        <li><strong>NFT Membership:</strong> Beneficios exclusivos</li>
+                        <li><strong>Analytics Dashboard:</strong> Real-time metrics</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; color: white;">
+            <h2 style="margin-bottom: 20px;">COUNTDOWN TO LAUNCH</h2>
+            <div style="font-size: 3em; font-weight: bold; margin: 20px 0;">120 DÍAS</div>
+            <p style="font-size: 1.2em;">Boulevard Virreyes, Lomas de Chapultepec</p>
+            <p style="margin-top: 20px; font-size: 1.1em;">
+                "La experiencia americana de hamburguesas artesanales<br>
+                elevada con el toque mexicano de hospitalidad premium"
+            </p>
+        </div>
+        
+        <div style="margin-top: 20px; text-align: center; color: #718096;">
+            <p>Dashboard preparado por: Gerencia de Business Intelligence</p>
+            <p>Actualización: Tiempo Real | Validez: 6 meses</p>
+        </div>
+    </div>
+    
+    <script>
+        // Animación de barras de progreso
+        setTimeout(() => {
+            document.getElementById('presales').style.width = '65%';
+            document.getElementById('followers').style.width = '45%';
+            document.getElementById('burnrate').style.width = '70%';
+            document.getElementById('training').style.width = '30%';
+            document.getElementById('construction').style.width = '25%';
+            document.getElementById('reach').style.width = '55%';
+        }, 500);
+        
+        // Animación de métricas
+        const metrics = document.querySelectorAll('.metric-card');
+        metrics.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+        
+        // Countdown simulado
+        let days = 120;
+        const countdown = setInterval(() => {
+            days--;
+            if (days >= 0) {
+                document.querySelector('.countdown').textContent = days + ' DÍAS';
+            }
+        }, 86400000); // Actualiza cada día
+    </script>
+</body>
+</html>
